@@ -5,60 +5,61 @@ import pandas as pd
 # CONFIG
 # =============================
 st.set_page_config(
-    page_title="Portal NPSN",
+    page_title="Portal NPSN Ultra Clean",
     layout="wide"
 )
 
 # =============================
-# 🎨 SUPER CLEAN CSS
+# 🎨 ULTRA CLEAN CSS
 # =============================
 st.markdown("""
 <style>
 
-/* BACKGROUND CLEAN */
+/* BACKGROUND SUPER CLEAN */
 .stApp {
-    background:#f6f8fb;
+    background:#f5f7fb;
 }
 
 /* NAVBAR */
 .navbar {
     background:white;
-    padding:18px;
+    padding:18px 25px;
     border-radius:14px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.06);
-    margin-bottom:25px;
+    box-shadow:0 6px 25px rgba(0,0,0,0.05);
+    margin-bottom:30px;
 }
 
-/* TITLE */
+/* TITLE CENTER */
 .big-title {
-    font-size:34px;
-    font-weight:700;
     text-align:center;
+    font-size:36px;
+    font-weight:700;
     color:#0f172a;
-    margin-top:20px;
+    margin-top:40px;
     animation:fadeUp 0.6s ease-in-out;
 }
 
 /* SEARCH BOX */
-.search-box {
+.search-area {
     background:white;
-    padding:30px;
+    padding:35px;
     border-radius:16px;
-    box-shadow:0 10px 35px rgba(0,0,0,0.07);
+    box-shadow:0 10px 40px rgba(0,0,0,0.06);
+    max-width:900px;
+    margin:auto;
     margin-top:20px;
 }
 
-/* RESULT CARD */
-.result-card {
+/* RESULT TABLE AREA */
+.result-area {
     background:white;
-    padding:25px;
+    padding:20px;
     border-radius:14px;
-    box-shadow:0 8px 25px rgba(0,0,0,0.05);
-    margin-top:20px;
-    animation:fadeUp 0.5s ease-in-out;
+    box-shadow:0 8px 30px rgba(0,0,0,0.05);
+    margin-top:25px;
 }
 
-/* SIDEBAR MINI PLAYER */
+/* SIDEBAR */
 section[data-testid="stSidebar"] {
     background:#ffffff;
 }
@@ -87,7 +88,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # =============================
-# 🎬 MINI PLAYLIST PLAYER
+# 🎬 MINI PLAYER PLAYLIST
 # =============================
 st.sidebar.title("🎧 Mini Player")
 
@@ -105,20 +106,17 @@ if playlist_url:
 st.markdown('<p class="big-title">Cari Data Sekolah Berdasarkan NPSN</p>', unsafe_allow_html=True)
 
 # =============================
-# 📄 SEARCH AREA
+# 🔎 SEARCH AREA
 # =============================
-st.markdown('<div class="search-box">', unsafe_allow_html=True)
+st.markdown('<div class="search-area">', unsafe_allow_html=True)
 
-sheet_url = st.text_input(
-    "Masukkan Link Spreadsheet"
-)
-
+sheet_url = st.text_input("Masukkan Link Spreadsheet")
 npsn = st.text_input("Masukkan NPSN")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 # =============================
-# LOAD DATA
+# LOAD DATA FUNCTION
 # =============================
 @st.cache_data
 def load_data(url):
@@ -138,7 +136,7 @@ def load_data(url):
     return df
 
 # =============================
-# 🔎 RESULT AREA
+# 🔥 RESULT OUTPUT (ROW STYLE)
 # =============================
 if sheet_url and npsn:
 
@@ -152,12 +150,14 @@ if sheet_url and npsn:
 
             if len(hasil) > 0:
 
-                data = hasil.iloc[0].to_dict()
+                st.markdown('<div class="result-area">', unsafe_allow_html=True)
 
-                st.markdown('<div class="result-card">', unsafe_allow_html=True)
-
-                for k,v in data.items():
-                    st.write(f"**{k.upper()}** : {v}")
+                # OUTPUT BARIS TABLE
+                st.dataframe(
+                    hasil,
+                    use_container_width=True,
+                    hide_index=True
+                )
 
                 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -166,4 +166,3 @@ if sheet_url and npsn:
 
     except Exception as e:
         st.error(f"Error: {e}")
-        
