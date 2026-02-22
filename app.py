@@ -1,89 +1,125 @@
 import streamlit as st
 import pandas as pd
 
-# =========================
-# PAGE CONFIG
-# =========================
+# =============================
+# CONFIG
+# =============================
 st.set_page_config(
     page_title="Portal NPSN",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# =========================
-# 🎨 MODERN CSS UI
-# =========================
+# =============================
+# 🎨 SUPER CLEAN CSS
+# =============================
 st.markdown("""
 <style>
 
-/* BACKGROUND */
+/* BACKGROUND CLEAN */
 .stApp {
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
+    background:#f6f8fb;
 }
 
-/* NAVBAR TITLE */
-.title {
-    font-size:38px;
+/* NAVBAR */
+.navbar {
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom:25px;
+}
+
+/* TITLE */
+.big-title {
+    font-size:34px;
     font-weight:700;
     text-align:center;
-    margin-bottom:10px;
-    animation: fadeUp 1s ease-in-out;
+    color:#0f172a;
+    margin-top:20px;
+    animation:fadeUp 0.6s ease-in-out;
 }
 
-/* CARD STYLE */
-.card {
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(12px);
-    padding:20px;
+/* SEARCH BOX */
+.search-box {
+    background:white;
+    padding:30px;
     border-radius:16px;
-    box-shadow:0 0 25px rgba(0,0,0,0.2);
-    animation: fadeUp 0.7s ease-in-out;
+    box-shadow:0 10px 35px rgba(0,0,0,0.07);
+    margin-top:20px;
+}
+
+/* RESULT CARD */
+.result-card {
+    background:white;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.05);
+    margin-top:20px;
+    animation:fadeUp 0.5s ease-in-out;
+}
+
+/* SIDEBAR MINI PLAYER */
+section[data-testid="stSidebar"] {
+    background:#ffffff;
 }
 
 /* INPUT STYLE */
 input {
-    border-radius:10px !important;
+    border-radius:12px !important;
 }
 
 /* ANIMATION */
 @keyframes fadeUp {
-    from {opacity:0; transform:translateY(15px);}
+    from {opacity:0; transform:translateY(10px);}
     to {opacity:1; transform:translateY(0);}
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="title">🎓 Portal Pencarian Data Sekolah</p>', unsafe_allow_html=True)
+# =============================
+# 🧭 NAVBAR
+# =============================
+st.markdown("""
+<div class="navbar">
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah</h3>
+</div>
+""", unsafe_allow_html=True)
 
-# =========================
-# 🎬 SIDEBAR PLAYLIST
-# =========================
-st.sidebar.title("🎧 Playlist")
+# =============================
+# 🎬 MINI PLAYLIST PLAYER
+# =============================
+st.sidebar.title("🎧 Mini Player")
 
 playlist_url = st.sidebar.text_input(
-    "Link Playlist YouTube",
+    "Playlist YouTube",
     placeholder="https://www.youtube.com/embed/videoseries?list=XXXX"
 )
 
 if playlist_url:
     st.sidebar.video(playlist_url)
 
-# =========================
-# 📄 INPUT LINK DATA
-# =========================
-st.markdown('<div class="card">', unsafe_allow_html=True)
+# =============================
+# 🧾 TITLE
+# =============================
+st.markdown('<p class="big-title">Cari Data Sekolah Berdasarkan NPSN</p>', unsafe_allow_html=True)
+
+# =============================
+# 📄 SEARCH AREA
+# =============================
+st.markdown('<div class="search-box">', unsafe_allow_html=True)
 
 sheet_url = st.text_input(
     "Masukkan Link Spreadsheet"
 )
 
+npsn = st.text_input("Masukkan NPSN")
+
 st.markdown('</div>', unsafe_allow_html=True)
 
-# =========================
+# =============================
 # LOAD DATA
-# =========================
+# =============================
 @st.cache_data
 def load_data(url):
 
@@ -101,46 +137,33 @@ def load_data(url):
 
     return df
 
-# =========================
-# 🔎 SEARCH UI
-# =========================
-if sheet_url:
+# =============================
+# 🔎 RESULT AREA
+# =============================
+if sheet_url and npsn:
 
     try:
         df = load_data(sheet_url)
 
-        col1, col2 = st.columns([3,1])
+        if "npsn" not in df.columns:
+            st.error("Kolom npsn tidak ditemukan")
+        else:
+            hasil = df[df["npsn"].astype(str) == str(npsn)]
 
-        with col1:
-            npsn = st.text_input("Cari NPSN")
+            if len(hasil) > 0:
 
-        if npsn:
+                data = hasil.iloc[0].to_dict()
 
-            if "npsn" not in df.columns:
-                st.error("Kolom npsn tidak ditemukan")
+                st.markdown('<div class="result-card">', unsafe_allow_html=True)
+
+                for k,v in data.items():
+                    st.write(f"**{k.upper()}** : {v}")
+
+                st.markdown('</div>', unsafe_allow_html=True)
+
             else:
-                hasil = df[df["npsn"].astype(str) == str(npsn)]
-
-                if len(hasil) > 0:
-
-                    data = hasil.iloc[0].to_dict()
-
-                    st.markdown('<div class="card">', unsafe_allow_html=True)
-
-                    for k,v in data.items():
-                        st.markdown(f"**{k.upper()}** : {v}")
-
-                    st.markdown('</div>', unsafe_allow_html=True)
-
-                else:
-                    st.warning("Data tidak ditemukan")
-
-        with st.expander("Preview Data"):
-            st.dataframe(df, use_container_width=True)
+                st.warning("Data tidak ditemukan")
 
     except Exception as e:
         st.error(f"Error: {e}")
-
-else:
-    st.info("Masukkan link spreadsheet terlebih dahulu.")
-    
+        
