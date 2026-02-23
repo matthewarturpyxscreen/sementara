@@ -5,12 +5,12 @@ import pandas as pd
 # CONFIG
 # ===================================
 st.set_page_config(
-    page_title="Portal NPSN V6 Final Boss",
+    page_title="Portal NPSN GODLIKE V7",
     layout="wide"
 )
 
 # ===================================
-# 🎨 FINAL BOSS CSS
+# 🎨 GODLIKE CLEAN CSS
 # ===================================
 st.markdown("""
 <style>
@@ -28,7 +28,7 @@ st.markdown("""
     padding:18px 25px;
     border-radius:14px;
     box-shadow:0 6px 25px rgba(0,0,0,0.06);
-    margin-bottom:30px;
+    margin-bottom:25px;
 }
 
 /* TITLE */
@@ -37,7 +37,7 @@ st.markdown("""
     font-size:42px;
     font-weight:700;
     color:#0f172a;
-    margin-top:40px;
+    margin-top:30px;
 }
 
 /* SEARCH AREA */
@@ -60,17 +60,13 @@ st.markdown("""
     margin-top:25px;
 }
 
-/* FLOAT PLAYER */
-.player{
-    position:fixed;
-    bottom:20px;
-    right:20px;
-    width:340px;
+/* FULL PLAYER */
+.player-full{
     background:white;
+    padding:20px;
     border-radius:18px;
-    box-shadow:0 15px 45px rgba(0,0,0,0.18);
-    padding:10px;
-    z-index:9999;
+    box-shadow:0 15px 45px rgba(0,0,0,0.15);
+    margin-top:25px;
 }
 
 input{
@@ -85,17 +81,37 @@ input{
 # ===================================
 st.markdown("""
 <div class="navbar">
-<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — FINAL BOSS</h3>
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — GODLIKE UI</h3>
 </div>
 """, unsafe_allow_html=True)
 
 # ===================================
-# 🎧 PLAYLIST LINK INPUT (PASTE LINK LANGSUNG)
+# 🎧 PLAYLIST LINK INPUT
 # ===================================
 playlist_link = st.text_input(
     "Masukkan Link Playlist YouTube",
     placeholder="https://www.youtube.com/playlist?list=XXXX"
 )
+
+# ===================================
+# FULL PLAYER RENDER
+# ===================================
+if playlist_link and "list=" in playlist_link:
+
+    playlist_id = playlist_link.split("list=")[-1].split("&")[0]
+
+    embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
+
+    st.markdown('<div class="player-full">', unsafe_allow_html=True)
+
+    # FULL WIDTH PLAYER
+    st.components.v1.iframe(
+        embed_url,
+        height=500,
+        scrolling=False
+    )
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
 # TITLE
@@ -113,7 +129,7 @@ npsn = st.text_input("Masukkan NPSN")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
-# LOAD DATA FUNCTION
+# LOAD DATA
 # ===================================
 @st.cache_data
 def load_data(url):
@@ -133,7 +149,7 @@ def load_data(url):
     return df
 
 # ===================================
-# RESULT TABLE OUTPUT BARIS
+# RESULT TABLE
 # ===================================
 if sheet_url and npsn:
 
@@ -162,23 +178,3 @@ if sheet_url and npsn:
 
     except Exception as e:
         st.error(f"Error: {e}")
-
-# ===================================
-# 🎧 FLOATING PLAYLIST PLAYER (AUTO NEXT)
-# ===================================
-if playlist_link and "list=" in playlist_link:
-
-    playlist_id = playlist_link.split("list=")[-1].split("&")[0]
-
-    embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
-
-    st.markdown(f"""
-    <div class="player">
-        <iframe width="320" height="180"
-        src="{embed_url}"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-        </iframe>
-    </div>
-    """, unsafe_allow_html=True)
