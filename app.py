@@ -5,12 +5,12 @@ import pandas as pd
 # CONFIG
 # ===================================
 st.set_page_config(
-    page_title="Portal NPSN GODLIKE V7",
+    page_title="Portal NPSN V8 Cinema",
     layout="wide"
 )
 
 # ===================================
-# 🎨 GODLIKE CLEAN CSS
+# 🎨 CLEAN CINEMA CSS
 # ===================================
 st.markdown("""
 <style>
@@ -19,7 +19,6 @@ st.markdown("""
     background:#f4f7fb;
 }
 
-/* NAVBAR */
 .navbar{
     position:sticky;
     top:0;
@@ -31,16 +30,14 @@ st.markdown("""
     margin-bottom:25px;
 }
 
-/* TITLE */
 .big-title{
     text-align:center;
-    font-size:42px;
+    font-size:40px;
     font-weight:700;
     color:#0f172a;
     margin-top:30px;
 }
 
-/* SEARCH AREA */
 .search-area{
     background:white;
     padding:35px;
@@ -51,7 +48,6 @@ st.markdown("""
     margin-top:20px;
 }
 
-/* RESULT */
 .result-area{
     background:white;
     padding:20px;
@@ -60,7 +56,6 @@ st.markdown("""
     margin-top:25px;
 }
 
-/* FULL PLAYER */
 .player-full{
     background:white;
     padding:20px;
@@ -81,37 +76,50 @@ input{
 # ===================================
 st.markdown("""
 <div class="navbar">
-<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — GODLIKE UI</h3>
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — CINEMA PLAYER</h3>
 </div>
 """, unsafe_allow_html=True)
 
 # ===================================
-# 🎧 PLAYLIST LINK INPUT
+# 🎧 INPUT LINK PLAYER
 # ===================================
-playlist_link = st.text_input(
-    "Masukkan Link Playlist YouTube",
-    placeholder="https://www.youtube.com/playlist?list=XXXX"
+media_link = st.text_input(
+    "Masukkan Link YouTube (Playlist atau Video)",
+    placeholder="https://www.youtube.com/playlist?list=XXXX atau https://youtu.be/XXXX"
 )
 
 # ===================================
-# FULL PLAYER RENDER
+# 🎬 PLAYER RENDER FLEXIBLE
 # ===================================
-if playlist_link and "list=" in playlist_link:
+if media_link:
 
-    playlist_id = playlist_link.split("list=")[-1].split("&")[0]
+    embed_url = None
 
-    embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
+    # PLAYLIST
+    if "list=" in media_link:
+        playlist_id = media_link.split("list=")[-1].split("&")[0]
+        embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
 
-    st.markdown('<div class="player-full">', unsafe_allow_html=True)
+    # VIDEO BIASA
+    elif "watch?v=" in media_link:
+        video_id = media_link.split("watch?v=")[-1].split("&")[0]
+        embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1"
 
-    # FULL WIDTH PLAYER
-    st.components.v1.iframe(
-        embed_url,
-        height=500,
-        scrolling=False
-    )
+    elif "youtu.be/" in media_link:
+        video_id = media_link.split("youtu.be/")[-1].split("?")[0]
+        embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1"
 
-    st.markdown('</div>', unsafe_allow_html=True)
+    if embed_url:
+
+        st.markdown('<div class="player-full">', unsafe_allow_html=True)
+
+        st.components.v1.iframe(
+            embed_url,
+            height=520,
+            scrolling=False
+        )
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
 # TITLE
@@ -149,7 +157,7 @@ def load_data(url):
     return df
 
 # ===================================
-# RESULT TABLE
+# RESULT TABLE OUTPUT
 # ===================================
 if sheet_url and npsn:
 
