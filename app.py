@@ -1,57 +1,58 @@
 import streamlit as st
 import pandas as pd
 
-# =============================
+# ===================================
 # CONFIG
-# =============================
+# ===================================
 st.set_page_config(
-    page_title="Portal NPSN Ultra Clean",
+    page_title="Portal NPSN V6 Final Boss",
     layout="wide"
 )
 
-# =============================
-# 🎨 ULTRA CLEAN CSS
-# =============================
+# ===================================
+# 🎨 FINAL BOSS CSS
+# ===================================
 st.markdown("""
 <style>
 
-/* BACKGROUND SUPER CLEAN */
-.stApp {
-    background:#f5f7fb;
+.stApp{
+    background:#f4f7fb;
 }
 
 /* NAVBAR */
-.navbar {
+.navbar{
+    position:sticky;
+    top:0;
+    z-index:999;
     background:white;
     padding:18px 25px;
     border-radius:14px;
-    box-shadow:0 6px 25px rgba(0,0,0,0.05);
+    box-shadow:0 6px 25px rgba(0,0,0,0.06);
     margin-bottom:30px;
 }
 
-/* TITLE CENTER */
-.big-title {
+/* TITLE */
+.big-title{
     text-align:center;
-    font-size:36px;
+    font-size:42px;
     font-weight:700;
     color:#0f172a;
     margin-top:40px;
-    animation:fadeUp 0.6s ease-in-out;
 }
 
-/* SEARCH BOX */
-.search-area {
+/* SEARCH AREA */
+.search-area{
     background:white;
     padding:35px;
     border-radius:16px;
-    box-shadow:0 10px 40px rgba(0,0,0,0.06);
+    box-shadow:0 10px 40px rgba(0,0,0,0.07);
     max-width:900px;
     margin:auto;
     margin-top:20px;
 }
 
-/* RESULT TABLE AREA */
-.result-area {
+/* RESULT */
+.result-area{
     background:white;
     padding:20px;
     border-radius:14px;
@@ -59,55 +60,51 @@ st.markdown("""
     margin-top:25px;
 }
 
-/* SIDEBAR */
-section[data-testid="stSidebar"] {
-    background:#ffffff;
+/* FLOAT PLAYER */
+.player{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:340px;
+    background:white;
+    border-radius:18px;
+    box-shadow:0 15px 45px rgba(0,0,0,0.18);
+    padding:10px;
+    z-index:9999;
 }
 
-/* INPUT STYLE */
-input {
+input{
     border-radius:12px !important;
-}
-
-/* ANIMATION */
-@keyframes fadeUp {
-    from {opacity:0; transform:translateY(10px);}
-    to {opacity:1; transform:translateY(0);}
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# =============================
-# 🧭 NAVBAR
-# =============================
+# ===================================
+# NAVBAR
+# ===================================
 st.markdown("""
 <div class="navbar">
-<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah</h3>
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — FINAL BOSS</h3>
 </div>
 """, unsafe_allow_html=True)
 
-# =============================
-# 🎬 MINI PLAYER PLAYLIST
-# =============================
-st.sidebar.title("🎧 Mini Player")
-
-playlist_url = st.sidebar.text_input(
-    "Playlist YouTube",
-    placeholder="https://www.youtube.com/embed/videoseries?list=XXXX"
+# ===================================
+# 🎧 PLAYLIST LINK INPUT (PASTE LINK LANGSUNG)
+# ===================================
+playlist_link = st.text_input(
+    "Masukkan Link Playlist YouTube",
+    placeholder="https://www.youtube.com/playlist?list=XXXX"
 )
 
-if playlist_url:
-    st.sidebar.video(playlist_url)
-
-# =============================
-# 🧾 TITLE
-# =============================
+# ===================================
+# TITLE
+# ===================================
 st.markdown('<p class="big-title">Cari Data Sekolah Berdasarkan NPSN</p>', unsafe_allow_html=True)
 
-# =============================
-# 🔎 SEARCH AREA
-# =============================
+# ===================================
+# SEARCH AREA
+# ===================================
 st.markdown('<div class="search-area">', unsafe_allow_html=True)
 
 sheet_url = st.text_input("Masukkan Link Spreadsheet")
@@ -115,9 +112,9 @@ npsn = st.text_input("Masukkan NPSN")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# =============================
+# ===================================
 # LOAD DATA FUNCTION
-# =============================
+# ===================================
 @st.cache_data
 def load_data(url):
 
@@ -135,9 +132,9 @@ def load_data(url):
 
     return df
 
-# =============================
-# 🔥 RESULT OUTPUT (ROW STYLE)
-# =============================
+# ===================================
+# RESULT TABLE OUTPUT BARIS
+# ===================================
 if sheet_url and npsn:
 
     try:
@@ -152,7 +149,6 @@ if sheet_url and npsn:
 
                 st.markdown('<div class="result-area">', unsafe_allow_html=True)
 
-                # OUTPUT BARIS TABLE
                 st.dataframe(
                     hasil,
                     use_container_width=True,
@@ -166,3 +162,23 @@ if sheet_url and npsn:
 
     except Exception as e:
         st.error(f"Error: {e}")
+
+# ===================================
+# 🎧 FLOATING PLAYLIST PLAYER (AUTO NEXT)
+# ===================================
+if playlist_link and "list=" in playlist_link:
+
+    playlist_id = playlist_link.split("list=")[-1].split("&")[0]
+
+    embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
+
+    st.markdown(f"""
+    <div class="player">
+        <iframe width="320" height="180"
+        src="{embed_url}"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+        </iframe>
+    </div>
+    """, unsafe_allow_html=True)
