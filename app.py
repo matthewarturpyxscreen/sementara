@@ -2,15 +2,15 @@ import streamlit as st
 import pandas as pd
 
 # ===================================
-# CONFIG
+# CONFIG (TIDAK BERUBAH)
 # ===================================
 st.set_page_config(
-    page_title="Portal NPSN V8 Cinema",
+    page_title="Portal NPSN V9 Smart Loader",
     layout="wide"
 )
 
 # ===================================
-# 🎨 CLEAN CINEMA CSS
+# 🎨 UI CSS (TETAP)
 # ===================================
 st.markdown("""
 <style>
@@ -76,31 +76,25 @@ input{
 # ===================================
 st.markdown("""
 <div class="navbar">
-<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — CINEMA PLAYER</h3>
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — SMART LOADER</h3>
 </div>
 """, unsafe_allow_html=True)
 
 # ===================================
-# 🎧 INPUT LINK PLAYER
+# 🎧 PLAYER FLEXIBLE (TETAP)
 # ===================================
 media_link = st.text_input(
-    "Masukkan Link YouTube (Playlist atau Video)",
-    placeholder="https://www.youtube.com/playlist?list=XXXX atau https://youtu.be/XXXX"
+    "Masukkan Link YouTube (Playlist atau Video)"
 )
 
-# ===================================
-# 🎬 PLAYER RENDER FLEXIBLE
-# ===================================
 if media_link:
 
     embed_url = None
 
-    # PLAYLIST
     if "list=" in media_link:
         playlist_id = media_link.split("list=")[-1].split("&")[0]
         embed_url = f"https://www.youtube.com/embed/videoseries?list={playlist_id}&autoplay=1&loop=1"
 
-    # VIDEO BIASA
     elif "watch?v=" in media_link:
         video_id = media_link.split("watch?v=")[-1].split("&")[0]
         embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1"
@@ -110,15 +104,8 @@ if media_link:
         embed_url = f"https://www.youtube.com/embed/{video_id}?autoplay=1"
 
     if embed_url:
-
         st.markdown('<div class="player-full">', unsafe_allow_html=True)
-
-        st.components.v1.iframe(
-            embed_url,
-            height=520,
-            scrolling=False
-        )
-
+        st.components.v1.iframe(embed_url, height=520)
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
@@ -137,27 +124,46 @@ npsn = st.text_input("Masukkan NPSN")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
-# LOAD DATA
+# 🧠 SMART LOADER (VERSI BARU)
 # ===================================
 @st.cache_data
 def load_data(url):
 
+    # baca tanpa header dulu
     if "docs.google.com" in url:
         url = url.replace("/edit?usp=sharing", "/export?format=csv")
-        df = pd.read_csv(url)
+        raw = pd.read_csv(url, header=None)
     elif url.endswith(".csv"):
-        df = pd.read_csv(url)
+        raw = pd.read_csv(url, header=None)
     else:
-        df = pd.read_excel(url)
+        raw = pd.read_excel(url, header=None)
 
-    df.columns = df.columns.astype(str).str.lower().str.strip()
+    header_row = None
+
+    # cari baris yang ada tulisan npsn
+    for i in range(min(10, len(raw))):
+        row_values = raw.iloc[i].astype(str).str.lower().tolist()
+        if any("npsn" in v for v in row_values):
+            header_row = i
+            break
+
+    # kalau ketemu header
+    if header_row is not None:
+        df = raw.iloc[header_row+1:].copy()
+        df.columns = raw.iloc[header_row].astype(str).str.lower().str.strip()
+    else:
+        # fallback → pakai header default
+        df = raw.copy()
+        df.columns = [f"kolom_{i}" for i in range(len(df.columns))]
+
+    # cleaning wajib
     df = df.loc[:, ~df.columns.duplicated()]
     df = df.reset_index(drop=True)
 
     return df
 
 # ===================================
-# RESULT TABLE OUTPUT
+# RESULT TABLE (TETAP)
 # ===================================
 if sheet_url and npsn:
 
@@ -165,7 +171,7 @@ if sheet_url and npsn:
         df = load_data(sheet_url)
 
         if "npsn" not in df.columns:
-            st.error("Kolom npsn tidak ditemukan")
+            st.warning("Kolom NPSN tidak ditemukan — cek header spreadsheet")
         else:
             hasil = df[df["npsn"].astype(str) == str(npsn)]
 
@@ -186,3 +192,4 @@ if sheet_url and npsn:
 
     except Exception as e:
         st.error(f"Error: {e}")
+        
