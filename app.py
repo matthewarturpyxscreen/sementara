@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # ===================================
-# 🎨 UI CSS (TIDAK DIUBAH)
+# 🎨 UI CSS (TETAP)
 # ===================================
 st.markdown("""
 <style>
@@ -91,7 +91,6 @@ st.markdown('<div class="search-area">', unsafe_allow_html=True)
 
 sheet_url = st.text_input("Masukkan Link Spreadsheet")
 
-# 🔥 FILTER MULTI SHEET MANUAL
 sheet_filter_input = st.text_input(
     "Filter Sheet (pisahkan dengan koma)",
     placeholder="Contoh: 18/2/2026, PAKE DATA INI UDAH KE UPDATE!!!"
@@ -102,7 +101,7 @@ npsn = st.text_input("Masukkan NPSN")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
-# 🧠 SMART MULTI SHEET LOADER
+# 🧠 SMART MULTI SHEET LOADER + SOURCE SHEET
 # ===================================
 @st.cache_data
 def load_data(url, sheet_filters):
@@ -114,13 +113,11 @@ def load_data(url, sheet_filters):
 
     selected_sheets = []
 
-    # kalau user isi filter
     if sheet_filters:
         for name in sheet_filters:
             if name in excel.sheet_names:
                 selected_sheets.append(name)
     else:
-        # kalau kosong → semua sheet
         selected_sheets = excel.sheet_names
 
     if len(selected_sheets) == 0:
@@ -147,6 +144,9 @@ def load_data(url, sheet_filters):
             df = raw.copy()
             df.columns = [f"kolom_{i}" for i in range(len(df.columns))]
 
+        # ⭐ TAMBAH LABEL ASAL SHEET
+        df["source_sheet"] = sheet_name
+
         df = df.loc[:, ~df.columns.duplicated()]
         all_df.append(df)
 
@@ -156,7 +156,7 @@ def load_data(url, sheet_filters):
     return final_df
 
 # ===================================
-# RESULT TABLE
+# RESULT TABLE (SEKARANG ADA SOURCE SHEET)
 # ===================================
 if sheet_url and npsn:
 
@@ -172,9 +172,17 @@ if sheet_url and npsn:
             hasil = df[df["npsn"].astype(str) == str(npsn)]
 
             if len(hasil) > 0:
+
                 st.markdown('<div class="result-area">', unsafe_allow_html=True)
-                st.dataframe(hasil, use_container_width=True, hide_index=True)
+
+                st.dataframe(
+                    hasil,
+                    use_container_width=True,
+                    hide_index=True
+                )
+
                 st.markdown('</div>', unsafe_allow_html=True)
+
             else:
                 st.warning("Data tidak ditemukan")
 
