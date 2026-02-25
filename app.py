@@ -1,137 +1,186 @@
 import streamlit as st
 import pandas as pd
+import base64
 
 # ===================================
 # CONFIG
 # ===================================
-st.set_page_config(page_title="Portal NPSN Anti Lag", layout="wide")
+st.set_page_config(page_title="Portal NPSN GAME ENGINE", layout="wide")
 
 # ===================================
-# 🎨 CSS + STICKMAN ANIMATION
+# FUNCTION LOAD FOTO BASE64 (WAJIB CLOUD)
 # ===================================
-st.markdown("""
+def img_to_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
+
+img1 = img_to_base64("foto1.jpg")
+img2 = img_to_base64("foto2.jpg")
+img3 = img_to_base64("foto3.jpg")
+img4 = img_to_base64("foto4.jpg")
+
+# ===================================
+# 🎮 GAME ENGINE CSS (ANIMASI BERANTEM BENERAN)
+# ===================================
+st.markdown(f"""
 <style>
 
-.stApp{background:#f4f7fb;}
+.stApp{{background:#f4f7fb;}}
 
-.navbar{
-    position:sticky;top:0;z-index:999;background:white;
-    padding:18px 25px;border-radius:14px;
+.navbar{{
+    background:white;
+    padding:18px 25px;
+    border-radius:14px;
     box-shadow:0 6px 25px rgba(0,0,0,0.06);
     margin-bottom:25px;
-}
+}}
 
-/* AREA ANIMASI */
-.fight-area{
+.fight-area{{
     display:flex;
     justify-content:center;
-    gap:60px;
+    gap:90px;
     margin-top:20px;
-}
+}}
 
-/* STICKMAN BODY */
-.stickman{
+.stickman{{
     position:relative;
     width:120px;
-    height:200px;
-    animation: fight 1.2s infinite alternate ease-in-out;
-}
+    height:230px;
+}}
 
-/* FOTO JADI KEPALA BULAT */
-.head{
+.head{{
     width:90px;
     height:90px;
     border-radius:50%;
-    object-fit:cover;
     position:absolute;
     top:0;
     left:15px;
     border:4px solid white;
+    object-fit:cover;
     box-shadow:0 6px 18px rgba(0,0,0,0.2);
-}
+    animation: headBounce 0.7s infinite alternate;
+}}
 
-/* BADAN */
-.body{
+.body{{
     position:absolute;
     top:90px;
     left:58px;
     width:4px;
     height:70px;
-    background:#111;
-}
+    background:black;
+}}
 
-/* TANGAN */
-.arm{
+.arm-left{{
     position:absolute;
     width:60px;
     height:4px;
-    background:#111;
+    background:black;
     top:110px;
-    left:30px;
-    transform-origin:left;
-}
+    left:0px;
+    transform-origin:right;
+    animation:punchLeft 0.5s infinite alternate;
+}}
 
-/* KAKI */
-.leg{
+.arm-right{{
     position:absolute;
     width:60px;
     height:4px;
-    background:#111;
-    top:160px;
-    left:30px;
+    background:black;
+    top:110px;
+    left:60px;
     transform-origin:left;
-}
+    animation:punchRight 0.5s infinite alternate;
+}}
 
-/* ANIMASI BERANTEM */
-@keyframes fight{
-    0% { transform: rotate(-6deg) translateY(0px);}
-    100% { transform: rotate(6deg) translateY(-8px);}
-}
+.leg-left{{
+    position:absolute;
+    width:60px;
+    height:4px;
+    background:black;
+    top:160px;
+    left:10px;
+    transform-origin:right;
+    animation:kickLeft 0.6s infinite alternate;
+}}
+
+.leg-right{{
+    position:absolute;
+    width:60px;
+    height:4px;
+    background:black;
+    top:160px;
+    left:50px;
+    transform-origin:left;
+    animation:kickRight 0.6s infinite alternate;
+}}
+
+@keyframes punchLeft{{
+    0%{{transform:rotate(-10deg);}}
+    100%{{transform:rotate(40deg);}}
+}}
+
+@keyframes punchRight{{
+    0%{{transform:rotate(10deg);}}
+    100%{{transform:rotate(-40deg);}}
+}}
+
+@keyframes kickLeft{{
+    0%{{transform:rotate(10deg);}}
+    100%{{transform:rotate(-30deg);}}
+}}
+
+@keyframes kickRight{{
+    0%{{transform:rotate(-10deg);}}
+    100%{{transform:rotate(30deg);}}
+}}
+
+@keyframes headBounce{{
+    0%{{transform:translateY(0px);}}
+    100%{{transform:translateY(-8px);}}
+}}
 
 </style>
-""", unsafe_allow_html=True)
 
-# ===================================
-# NAVBAR
-# ===================================
-st.markdown("""
 <div class="navbar">
-<h3>🎓 Portal Data Sekolah — ANTI LAG TOTAL</h3>
+<h3>🎮 Portal Data Sekolah — GAME ENGINE PRO MAX</h3>
 </div>
-""", unsafe_allow_html=True)
 
-# ===================================
-# 🥊 STICKMAN FIGHT AREA
-# ===================================
-st.markdown("""
 <div class="fight-area">
 
 <div class="stickman">
-<img src="foto1.jpg" class="head">
+<img src="data:image/jpeg;base64,{img1}" class="head">
 <div class="body"></div>
-<div class="arm" style="transform:rotate(25deg);"></div>
-<div class="leg" style="transform:rotate(-20deg);"></div>
+<div class="arm-left"></div>
+<div class="arm-right"></div>
+<div class="leg-left"></div>
+<div class="leg-right"></div>
 </div>
 
 <div class="stickman">
-<img src="foto2.jpg" class="head">
+<img src="data:image/jpeg;base64,{img2}" class="head">
 <div class="body"></div>
-<div class="arm" style="transform:rotate(-25deg);"></div>
-<div class="leg" style="transform:rotate(20deg);"></div>
+<div class="arm-left"></div>
+<div class="arm-right"></div>
+<div class="leg-left"></div>
+<div class="leg-right"></div>
 </div>
 
 <div class="stickman">
-<img src="foto3.jpg" class="head">
+<img src="data:image/jpeg;base64,{img3}" class="head">
 <div class="body"></div>
-<div class="arm" style="transform:rotate(30deg);"></div>
-<div class="leg" style="transform:rotate(-15deg);"></div>
+<div class="arm-left"></div>
+<div class="arm-right"></div>
+<div class="leg-left"></div>
+<div class="leg-right"></div>
 </div>
 
 <div class="stickman">
-<img src="foto4.jpg" class="head">
+<img src="data:image/jpeg;base64,{img4}" class="head">
 <div class="body"></div>
-<div class="arm" style="transform:rotate(-30deg);"></div>
-<div class="leg" style="transform:rotate(15deg);"></div>
+<div class="arm-left"></div>
+<div class="arm-right"></div>
+<div class="leg-left"></div>
+<div class="leg-right"></div>
 </div>
 
 </div>
@@ -164,7 +213,7 @@ if media_link:
         st.components.v1.iframe(embed_url,height=520)
 
 # ===================================
-# 🔎 SEARCH
+# 🔎 SEARCH AREA
 # ===================================
 st.markdown("### 🔎 Pencarian")
 
