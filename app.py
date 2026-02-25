@@ -5,10 +5,10 @@ import base64
 # ===================================
 # CONFIG
 # ===================================
-st.set_page_config(page_title="Portal NPSN GAME ENGINE", layout="wide")
+st.set_page_config(page_title="Portal NPSN WEB GAME CINEMA ULTRA", layout="wide")
 
 # ===================================
-# FUNCTION LOAD FOTO BASE64 (WAJIB CLOUD)
+# FUNCTION LOAD FOTO
 # ===================================
 def img_to_base64(path):
     with open(path, "rb") as f:
@@ -20,7 +20,7 @@ img3 = img_to_base64("foto3.jpg")
 img4 = img_to_base64("foto4.jpg")
 
 # ===================================
-# 🎮 GAME ENGINE CSS (ANIMASI BERANTEM BENERAN)
+# 🎮 WEB GAME CINEMA ULTRA CSS ENGINE
 # ===================================
 st.markdown(f"""
 <style>
@@ -38,14 +38,15 @@ st.markdown(f"""
 .fight-area{{
     display:flex;
     justify-content:center;
-    gap:90px;
+    gap:100px;
     margin-top:20px;
 }}
 
 .stickman{{
     position:relative;
-    width:120px;
-    height:230px;
+    width:140px;
+    height:260px;
+    animation: bodyMove 0.5s infinite alternate ease-in-out;
 }}
 
 .head{{
@@ -54,50 +55,59 @@ st.markdown(f"""
     border-radius:50%;
     position:absolute;
     top:0;
-    left:15px;
+    left:25px;
     border:4px solid white;
     object-fit:cover;
-    box-shadow:0 6px 18px rgba(0,0,0,0.2);
-    animation: headBounce 0.7s infinite alternate;
+    box-shadow:0 6px 18px rgba(0,0,0,0.25);
+    animation: headBounce 0.5s infinite alternate;
 }}
 
 .body{{
     position:absolute;
     top:90px;
-    left:58px;
+    left:68px;
     width:4px;
-    height:70px;
+    height:80px;
+    background:black;
+}}
+
+.pelvis{{
+    position:absolute;
+    top:165px;
+    left:45px;
+    width:50px;
+    height:4px;
     background:black;
 }}
 
 .arm-left{{
     position:absolute;
-    width:60px;
+    width:70px;
     height:4px;
     background:black;
     top:110px;
-    left:0px;
+    left:-5px;
     transform-origin:right;
-    animation:punchLeft 0.5s infinite alternate;
+    animation:punchLeft 0.4s infinite alternate;
 }}
 
 .arm-right{{
     position:absolute;
-    width:60px;
+    width:70px;
     height:4px;
     background:black;
     top:110px;
-    left:60px;
+    left:75px;
     transform-origin:left;
-    animation:punchRight 0.5s infinite alternate;
+    animation:punchRight 0.4s infinite alternate;
 }}
 
 .leg-left{{
     position:absolute;
-    width:60px;
+    width:70px;
     height:4px;
     background:black;
-    top:160px;
+    top:180px;
     left:10px;
     transform-origin:right;
     animation:kickLeft 0.6s infinite alternate;
@@ -105,44 +115,49 @@ st.markdown(f"""
 
 .leg-right{{
     position:absolute;
-    width:60px;
+    width:70px;
     height:4px;
     background:black;
-    top:160px;
-    left:50px;
+    top:180px;
+    left:60px;
     transform-origin:left;
     animation:kickRight 0.6s infinite alternate;
 }}
 
+@keyframes bodyMove{{
+    0%{{transform:translateY(0px);}}
+    100%{{transform:translateY(-10px);}}
+}}
+
 @keyframes punchLeft{{
-    0%{{transform:rotate(-10deg);}}
-    100%{{transform:rotate(40deg);}}
+    0%{{transform:rotate(-15deg);}}
+    100%{{transform:rotate(60deg);}}
 }}
 
 @keyframes punchRight{{
-    0%{{transform:rotate(10deg);}}
-    100%{{transform:rotate(-40deg);}}
+    0%{{transform:rotate(15deg);}}
+    100%{{transform:rotate(-60deg);}}
 }}
 
 @keyframes kickLeft{{
     0%{{transform:rotate(10deg);}}
-    100%{{transform:rotate(-30deg);}}
+    100%{{transform:rotate(-45deg);}}
 }}
 
 @keyframes kickRight{{
     0%{{transform:rotate(-10deg);}}
-    100%{{transform:rotate(30deg);}}
+    100%{{transform:rotate(45deg);}}
 }}
 
 @keyframes headBounce{{
     0%{{transform:translateY(0px);}}
-    100%{{transform:translateY(-8px);}}
+    100%{{transform:translateY(-12px);}}
 }}
 
 </style>
 
 <div class="navbar">
-<h3>🎮 Portal Data Sekolah — GAME ENGINE PRO MAX</h3>
+<h3>🎮 Portal Data Sekolah — WEB GAME CINEMA ULTRA</h3>
 </div>
 
 <div class="fight-area">
@@ -150,6 +165,7 @@ st.markdown(f"""
 <div class="stickman">
 <img src="data:image/jpeg;base64,{img1}" class="head">
 <div class="body"></div>
+<div class="pelvis"></div>
 <div class="arm-left"></div>
 <div class="arm-right"></div>
 <div class="leg-left"></div>
@@ -159,6 +175,7 @@ st.markdown(f"""
 <div class="stickman">
 <img src="data:image/jpeg;base64,{img2}" class="head">
 <div class="body"></div>
+<div class="pelvis"></div>
 <div class="arm-left"></div>
 <div class="arm-right"></div>
 <div class="leg-left"></div>
@@ -168,6 +185,7 @@ st.markdown(f"""
 <div class="stickman">
 <img src="data:image/jpeg;base64,{img3}" class="head">
 <div class="body"></div>
+<div class="pelvis"></div>
 <div class="arm-left"></div>
 <div class="arm-right"></div>
 <div class="leg-left"></div>
@@ -177,6 +195,7 @@ st.markdown(f"""
 <div class="stickman">
 <img src="data:image/jpeg;base64,{img4}" class="head">
 <div class="body"></div>
+<div class="pelvis"></div>
 <div class="arm-left"></div>
 <div class="arm-right"></div>
 <div class="leg-left"></div>
