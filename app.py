@@ -5,13 +5,10 @@ import time
 # ===================================
 # CONFIG
 # ===================================
-st.set_page_config(
-    page_title="Portal NPSN Multi Sheet",
-    layout="wide"
-)
+st.set_page_config(page_title="Portal NPSN Anti Lag", layout="wide")
 
 # ===================================
-# 🎨 UI CSS (TETAP)
+# 🎨 CSS
 # ===================================
 st.markdown("""
 <style>
@@ -41,7 +38,6 @@ st.markdown("""
     box-shadow:0 15px 45px rgba(0,0,0,0.15);
     margin-top:25px;
 }
-input{border-radius:12px !important;}
 </style>
 """, unsafe_allow_html=True)
 
@@ -50,9 +46,26 @@ input{border-radius:12px !important;}
 # ===================================
 st.markdown("""
 <div class="navbar">
-<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — MULTI SHEET FILTER</h3>
+<h3 style='margin:0;color:#0f172a;'>🎓 Portal Data Sekolah — ANTI LAG TOTAL</h3>
 </div>
 """, unsafe_allow_html=True)
+
+# ===================================
+# 📸 FOTO DEKORASI (DARI GAMBAR YANG KAMU UPLOAD)
+# ===================================
+colA, colB, colC, colD = st.columns(4)
+
+with colA:
+    st.image("/mnt/data/ca1e04de-46d5-47c2-8020-5adcc2fffd59.jpg", use_container_width=True)
+
+with colB:
+    st.image("/mnt/data/f243533f-6a13-4d54-9955-e3803d49df9f.jpg", use_container_width=True)
+
+with colC:
+    st.image("/mnt/data/d5f2ba3e-40e6-4f63-8282-344a8905b0e7.jpg", use_container_width=True)
+
+with colD:
+    st.image("/mnt/data/e96ef8d1-278e-439b-93f1-2e282a8aa2b5.jpg", use_container_width=True)
 
 # ===================================
 # 🎧 PLAYER FLEXIBLE
@@ -102,17 +115,10 @@ npsn = st.text_input("Masukkan NPSN")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
-# ⚡ SMART SYNC VERSION KEY
-# ===================================
-def get_version_key():
-    # ganti angka 30 kalau mau interval sync lain
-    return int(time.time() // 30)
-
-# ===================================
-# 🧠 SMART MULTI SHEET LOADER + SOURCE SHEET
+# 🧠 LOAD DATA SEKALI SAJA (ANTI LAG TOTAL)
 # ===================================
 @st.cache_data(show_spinner=False)
-def load_data(url, sheet_filters, version_key):
+def load_data(url, sheet_filters):
 
     if "docs.google.com" in url:
         url = url.replace("/edit?usp=sharing", "/export?format=xlsx")
@@ -127,9 +133,6 @@ def load_data(url, sheet_filters, version_key):
                 selected_sheets.append(name)
     else:
         selected_sheets = excel.sheet_names
-
-    if len(selected_sheets) == 0:
-        raise ValueError("Tidak ada sheet yang cocok dengan filter")
 
     all_df = []
 
@@ -156,21 +159,22 @@ def load_data(url, sheet_filters, version_key):
         all_df.append(df)
 
     final_df = pd.concat(all_df, ignore_index=True, sort=False)
-    final_df = final_df.reset_index(drop=True)
-
-    return final_df
+    return final_df.reset_index(drop=True)
 
 # ===================================
-# RESULT TABLE
+# RESULT SUPER CEPAT
 # ===================================
-if sheet_url and npsn:
+if sheet_url:
 
-    try:
+    filters = [s.strip() for s in sheet_filter_input.split(",")] if sheet_filter_input else []
 
-        filters = [s.strip() for s in sheet_filter_input.split(",")] if sheet_filter_input else []
+    # ⚡ LOAD SEKALI
+    if "cached_df" not in st.session_state:
+        st.session_state.cached_df = load_data(sheet_url, filters)
 
-        version_key = get_version_key()
-        df = load_data(sheet_url, filters, version_key)
+    df = st.session_state.cached_df
+
+    if npsn:
 
         if "npsn" not in df.columns:
             st.warning("Kolom NPSN tidak ditemukan")
@@ -178,19 +182,8 @@ if sheet_url and npsn:
             hasil = df[df["npsn"].astype(str) == str(npsn)]
 
             if len(hasil) > 0:
-
                 st.markdown('<div class="result-area">', unsafe_allow_html=True)
-
-                st.dataframe(
-                    hasil,
-                    use_container_width=True,
-                    hide_index=True
-                )
-
+                st.dataframe(hasil, use_container_width=True, hide_index=True)
                 st.markdown('</div>', unsafe_allow_html=True)
-
             else:
                 st.warning("Data tidak ditemukan")
-
-    except Exception as e:
-        st.error(f"Error: {e}")
