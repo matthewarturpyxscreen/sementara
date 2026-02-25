@@ -103,7 +103,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 # ===================================
 # 🧠 SMART MULTI SHEET LOADER + SOURCE SHEET
 # ===================================
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_data(url, sheet_filters):
 
     if "docs.google.com" in url:
