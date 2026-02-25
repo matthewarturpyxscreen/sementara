@@ -51,21 +51,21 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ===================================
-# 📸 FOTO DEKORASI (DARI GAMBAR YANG KAMU UPLOAD)
+# 📸 FOTO DEKORASI (AMAN STREAMLIT CLOUD)
 # ===================================
 colA, colB, colC, colD = st.columns(4)
 
 with colA:
-    st.image("/mnt/data/ca1e04de-46d5-47c2-8020-5adcc2fffd59.jpg", use_container_width=True)
+    st.image("foto1.jpg", use_container_width=True)
 
 with colB:
-    st.image("/mnt/data/f243533f-6a13-4d54-9955-e3803d49df9f.jpg", use_container_width=True)
+    st.image("foto2.jpg", use_container_width=True)
 
 with colC:
-    st.image("/mnt/data/d5f2ba3e-40e6-4f63-8282-344a8905b0e7.jpg", use_container_width=True)
+    st.image("foto3.jpg", use_container_width=True)
 
 with colD:
-    st.image("/mnt/data/e96ef8d1-278e-439b-93f1-2e282a8aa2b5.jpg", use_container_width=True)
+    st.image("foto4.jpg", use_container_width=True)
 
 # ===================================
 # 🎧 PLAYER FLEXIBLE
