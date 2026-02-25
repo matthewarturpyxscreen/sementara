@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 # ===================================
 # CONFIG
@@ -54,7 +55,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ===================================
-# 🎧 PLAYER FLEXIBLE (TETAP)
+# 🎧 PLAYER FLEXIBLE
 # ===================================
 media_link = st.text_input("Masukkan Link YouTube (Playlist atau Video)")
 
@@ -101,10 +102,17 @@ npsn = st.text_input("Masukkan NPSN")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ===================================
+# ⚡ SMART SYNC VERSION KEY
+# ===================================
+def get_version_key():
+    # ganti angka 30 kalau mau interval sync lain
+    return int(time.time() // 30)
+
+# ===================================
 # 🧠 SMART MULTI SHEET LOADER + SOURCE SHEET
 # ===================================
-@st.cache_data(ttl=60)
-def load_data(url, sheet_filters):
+@st.cache_data(show_spinner=False)
+def load_data(url, sheet_filters, version_key):
 
     if "docs.google.com" in url:
         url = url.replace("/edit?usp=sharing", "/export?format=xlsx")
@@ -129,7 +137,6 @@ def load_data(url, sheet_filters):
 
         raw = pd.read_excel(excel, sheet_name=sheet_name, header=None)
 
-        # AUTO HEADER DETECT
         header_row = None
         for i in range(min(10, len(raw))):
             row_values = raw.iloc[i].astype(str).str.lower().tolist()
@@ -144,9 +151,7 @@ def load_data(url, sheet_filters):
             df = raw.copy()
             df.columns = [f"kolom_{i}" for i in range(len(df.columns))]
 
-        # ⭐ TAMBAH LABEL ASAL SHEET
         df["source_sheet"] = sheet_name
-
         df = df.loc[:, ~df.columns.duplicated()]
         all_df.append(df)
 
@@ -156,7 +161,7 @@ def load_data(url, sheet_filters):
     return final_df
 
 # ===================================
-# RESULT TABLE (SEKARANG ADA SOURCE SHEET)
+# RESULT TABLE
 # ===================================
 if sheet_url and npsn:
 
@@ -164,7 +169,8 @@ if sheet_url and npsn:
 
         filters = [s.strip() for s in sheet_filter_input.split(",")] if sheet_filter_input else []
 
-        df = load_data(sheet_url, filters)
+        version_key = get_version_key()
+        df = load_data(sheet_url, filters, version_key)
 
         if "npsn" not in df.columns:
             st.warning("Kolom NPSN tidak ditemukan")
